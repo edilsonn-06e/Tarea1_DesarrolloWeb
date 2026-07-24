@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Edi's Store - Registro de Usuario</title>
+</head>
+<body>
+
+    <header>
+        <h1>Registro de Usuario</h1>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="productos.html">Catálogo de Productos</a></li>
+                <li><a href="producto-detalle.html">Detalle de Producto</a></li>
+                <li><a href="carrito.html">Carrito de Compras</a></li>
+                <li><a href="registro.html">Registro de Usuario</a></li>
+                <li><a href="login.html">Iniciar Sesión</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <hr>
+
+    <main>
+        <section>
+            <h2>Crea tu cuenta</h2>
+            <p>Completa el siguiente formulario para registrarte en la tienda.</p>
+
+            <form action="#" method="post">
+                <fieldset>
+                    <legend>Datos personales</legend>
+
+                    <label for="nombres">Nombres:</label><br>
+                    <input type="text" id="nombres" name="nombres" required><br><br>
+
+                    <label for="apellidos">Apellidos:</label><br>
+                    <input type="text" id="apellidos" name="apellidos" required><br><br>
+
+                    <label for="fecha_nacimiento">Fecha de nacimiento:</label><br>
+                    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento"><br><br>
+
+                    <label for="genero">Género:</label><br>
+                    <input type="radio" id="genero_f" name="genero" value="femenino">
+                    <label for="genero_f">Femenino</label>
+                    <input type="radio" id="genero_m" name="genero" value="masculino">
+                    <label for="genero_m">Masculino</label>
+                    <input type="radio" id="genero_o" name="genero" value="otro">
+                    <label for="genero_o">Otro</label><br><br>
+
+                    <label for="dpi">Número de DPI:</label><br>
+                    <input type="text" id="dpi" name="dpi" maxlength="13" placeholder="0000000000000"><br><br>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Datos de contacto</legend>
+
+                    <label for="correo">Correo electrónico:</label><br>
+                    <input type="email" id="correo" name="correo" required><br><br>
+
+                    <label for="telefono">Teléfono:</label><br>
+                    <input type="tel" id="telefono" name="telefono" placeholder="0000-0000"><br><br>
+
+                    <label for="direccion_reg">Dirección:</label><br>
+                    <textarea id="direccion_reg" name="direccion_reg" rows="3" cols="40"></textarea><br><br>
+
+                    <label for="pais">País:</label><br>
+                    <select id="pais" name="pais">
+                        <option value="guatemala">Guatemala</option>
+                        <option value="mexico">México</option>
+                        <option value="honduras">Honduras</option>
+                        <option value="el_salvador">El Salvador</option>
+                        <option value="otro">Otro</option>
+                    </select><br><br>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Credenciales de acceso</legend>
+
+                    <label for="usuario">Nombre de usuario:</label><br>
+                    <input type="text" id="usuario" name="usuario" required><br><br>
+
+                    <label for="clave">Contraseña:</label><br>
+                    <input type="password" id="clave" name="clave" required><br><br>
+
+                    <label for="clave_confirmar">Confirmar contraseña:</label><br>
+                    <input type="password" id="clave_confirmar" name="clave_confirmar" required><br><br>
+                </fieldset>
+
+                <fieldset>
+                    <legend>Preferencias</legend>
+
+                    <input type="checkbox" id="boletin" name="boletin" value="si">
+                    <label for="boletin">Deseo recibir el boletín de ofertas por correo</label><br><br>
+
+                    <input type="checkbox" id="terminos" name="terminos" value="aceptado" required>
+                    <label for="terminos">Acepto los términos y condiciones</label><br><br>
+                </fieldset>
+
+                <input type="submit" value="Registrarme">
+                <input type="reset" value="Limpiar formulario">
+            </form>
+        </section>
+    </main>
+
+    <hr>
+
+    <footer>
+        <p>Edi's Store &copy; 2026 - UMG</p>
+        <p>Desarrollado por: Edilson Enrique García Villeda - Carnet: 9490-23-2637</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Edi's Store - Detalle de Producto</title>
+</head>
+<body>
+
+    <header>
+        <h1>Detalle de Producto</h1>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="productos.html">Catálogo de Productos</a></li>
+                <li><a href="producto-detalle.html">Detalle de Producto</a></li>
+                <li><a href="carrito.html">Carrito de Compras</a></li>
+                <li><a href="registro.html">Registro de Usuario</a></li>
+                <li><a href="login.html">Iniciar Sesión</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <hr>
+
+    <main>
+        <article>
+            <h2>Laptop Ultra Slim 14"</h2>
+
+            <figure>
+                <img src="laptop.jpeg" alt="Fotografía de la Laptop Ultra Slim 14 pulgadas" width="300" height="200">
+                <figcaption>Laptop Ultra Slim 14" - Color Gris Espacial</figcaption>
+            </figure>
+
+            <p><strong>Código:</strong> P-001</p>
+            <p><strong>Categoría:</strong> Tecnología</p>
+            <p><strong>Precio:</strong> Q 6,500.00</p>
+            <p><strong>Existencias disponibles:</strong> 12 unidades</p>
+
+            <h3>Descripción</h3>
+            <p>
+                Laptop delgada y ligera, ideal para trabajo, estudio y entretenimiento.
+                Cuenta con procesador de última generación, 16 GB de memoria RAM y
+                almacenamiento de estado sólido de 512 GB.
+            </p>
+
+            <h3>Especificaciones técnicas</h3>
+            <table border="1">
+                <tr>
+                    <th>Característica</th>
+                    <th>Detalle</th>
+                </tr>
+                <tr>
+                    <td>Procesador</td>
+                    <td>Núcleo de 8 hilos, 3.2 GHz</td>
+                </tr>
+                <tr>
+                    <td>Memoria RAM</td>
+                    <td>16 GB</td>
+                </tr>
+                <tr>
+                    <td>Almacenamiento</td>
+                    <td>512 GB SSD</td>
+                </tr>
+                <tr>
+                    <td>Pantalla</td>
+                    <td>14 pulgadas, Full HD</td>
+                </tr>
+                <tr>
+                    <td>Peso</td>
+                    <td>1.3 kg</td>
+                </tr>
+            </table>
+
+            <h3>Agregar al carrito</h3>
+            <form action="#" method="post">
+                <fieldset>
+                    <legend>Cantidad y color</legend>
+
+                    <label for="cantidad">Cantidad:</label>
+                    <input type="number" id="cantidad" name="cantidad" min="1" max="12" value="1"><br><br>
+
+                    <label for="color">Color:</label>
+                    <select id="color" name="color">
+                        <option value="gris">Gris espacial</option>
+                        <option value="plata">Plata</option>
+                        <option value="negro">Negro</option>
+                    </select><br><br>
+
+                    <input type="submit" value="Agregar al carrito">
+                </fieldset>
+            </form>
+        </article>
+
+        <hr>
+
+        <section>
+            <h3>Opiniones de clientes</h3>
+
+            <article>
+                <p><strong>María López</strong> calificó este producto con 5 estrellas.</p>
+                <p>"Excelente rendimiento y muy ligera para transportar."</p>
+            </article>
+
+            <article>
+                <p><strong>Carlos Ramírez</strong> calificó este producto con 4 estrellas.</p>
+                <p>"Buena batería, aunque esperaba más puertos USB."</p>
+            </article>
+        </section>
+    </main>
+
+    <hr>
+
+    <footer>
+        <p>Edi's Store &copy; 2026 - UMG</p>
+        <p>Desarrollado por: Edilson Enrique García Villeda - Carnet: 9490-23-2637</p>
+    </footer>
+
+</body>
+</html>

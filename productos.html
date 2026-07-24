@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Edi's Store - Catálogo de Productos</title>
+</head>
+<body>
+
+    <header>
+        <h1>Catálogo de Productos</h1>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="productos.html">Catálogo de Productos</a></li>
+                <li><a href="producto-detalle.html">Detalle de Producto</a></li>
+                <li><a href="carrito.html">Carrito de Compras</a></li>
+                <li><a href="registro.html">Registro de Usuario</a></li>
+                <li><a href="login.html">Iniciar Sesión</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <hr>
+
+    <main>
+        <section>
+            <h2>Filtrar productos</h2>
+            <form action="#" method="get">
+                <fieldset>
+                    <legend>Búsqueda y filtros</legend>
+
+                    <label for="buscar">Buscar producto:</label><br>
+                    <input type="text" id="buscar" name="buscar" placeholder="Ej. laptop, silla, audífonos"><br><br>
+
+                    <label for="categoria">Categoría:</label><br>
+                    <select id="categoria" name="categoria">
+                        <option value="">-- Todas --</option>
+                        <option value="tecnologia">Tecnología</option>
+                        <option value="hogar">Hogar y Oficina</option>
+                        <option value="accesorios">Accesorios</option>
+                    </select><br><br>
+
+                    <label for="orden">Ordenar por:</label><br>
+                    <input type="radio" id="orden_asc" name="orden" value="asc">
+                    <label for="orden_asc">Precio: menor a mayor</label><br>
+                    <input type="radio" id="orden_desc" name="orden" value="desc">
+                    <label for="orden_desc">Precio: mayor a menor</label><br><br>
+
+                    <input type="submit" value="Buscar">
+                    <input type="reset" value="Limpiar">
+                </fieldset>
+            </form>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>Listado de Productos</h2>
+
+            <table border="1">
+                <caption>Productos disponibles en tienda</caption>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Existencias</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>P-001</td>
+                        <td>Laptop Ultra Slim 14"</td>
+                        <td>Tecnología</td>
+                        <td>Q 6,500.00</td>
+                        <td>12</td>
+                        <td><a href="producto-detalle.html">Ver detalle</a></td>
+                    </tr>
+                    <tr>
+                        <td>P-002</td>
+                        <td>Audífonos Inalámbricos</td>
+                        <td>Tecnología</td>
+                        <td>Q 350.00</td>
+                        <td>40</td>
+                        <td><a href="producto-detalle.html">Ver detalle</a></td>
+                    </tr>
+                    <tr>
+                        <td>P-003</td>
+                        <td>Silla Ergonómica de Oficina</td>
+                        <td>Hogar y Oficina</td>
+                        <td>Q 1,200.00</td>
+                        <td>8</td>
+                        <td><a href="producto-detalle.html">Ver detalle</a></td>
+                    </tr>
+                    <tr>
+                        <td>P-004</td>
+                        <td>Mochila Antirrobo</td>
+                        <td>Accesorios</td>
+                        <td>Q 275.00</td>
+                        <td>25</td>
+                        <td><a href="producto-detalle.html">Ver detalle</a></td>
+                    </tr>
+                    <tr>
+                        <td>P-005</td>
+                        <td>Monitor Curvo 27"</td>
+                        <td>Tecnología</td>
+                        <td>Q 2,100.00</td>
+                        <td>15</td>
+                        <td><a href="producto-detalle.html">Ver detalle</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <hr>
+
+    <footer>
+        <p>Edi's Store &copy; 2026 - UMG</p>
+        <p>Desarrollado por: Edilson Enrique García Villeda - Carnet: 9490-23-2637</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Edi's Store - Contacto</title>
+</head>
+<body>
+
+    <header>
+        <h1>Contáctanos</h1>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="productos.html">Catálogo de Productos</a></li>
+                <li><a href="producto-detalle.html">Detalle de Producto</a></li>
+                <li><a href="carrito.html">Carrito de Compras</a></li>
+                <li><a href="registro.html">Registro de Usuario</a></li>
+                <li><a href="login.html">Iniciar Sesión</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <hr>
+
+    <main>
+        <section>
+            <h2>Información de contacto</h2>
+            <address>
+                Tienda en Línea (Prototipo)<br>
+                12 Avenida 5-55, Zona 10, Ciudad de Guatemala<br>
+                Teléfono: (502) 2222-3333<br>
+                Correo: contacto@tiendaenlinea.com.gt
+            </address>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>Envíanos un mensaje</h2>
+            <form action="#" method="post">
+                <fieldset>
+                    <legend>Formulario de contacto</legend>
+
+                    <label for="nombre_contacto">Nombre completo:</label><br>
+                    <input type="text" id="nombre_contacto" name="nombre_contacto" required><br><br>
+
+                    <label for="correo_contacto">Correo electrónico:</label><br>
+                    <input type="email" id="correo_contacto" name="correo_contacto" required><br><br>
+
+                    <label for="asunto">Asunto:</label><br>
+                    <select id="asunto" name="asunto">
+                        <option value="consulta">Consulta general</option>
+                        <option value="soporte">Soporte técnico</option>
+                        <option value="devolucion">Devoluciones y garantías</option>
+                        <option value="sugerencia">Sugerencia</option>
+                    </select><br><br>
+
+                    <label for="mensaje">Mensaje:</label><br>
+                    <textarea id="mensaje" name="mensaje" rows="6" cols="50"></textarea><br><br>
+
+                    <input type="submit" value="Enviar mensaje">
+                    <input type="reset" value="Limpiar">
+                </fieldset>
+            </form>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>Preguntas frecuentes</h2>
+            <dl>
+                <dt>¿Cuánto tarda el envío?</dt>
+                <dd>Entre 3 y 5 días hábiles dentro del territorio nacional.</dd>
+
+                <dt>¿Puedo cambiar un producto?</dt>
+                <dd>Sí, cuentas con 15 días calendario para solicitar un cambio.</dd>
+
+                <dt>¿Qué métodos de pago aceptan?</dt>
+                <dd>Tarjeta de crédito, débito y pago contra entrega.</dd>
+            </dl>
+        </section>
+    </main>
+
+    <hr>
+
+    <footer>
+        <p>Edi's Store &copy; 2026 - UMG</p>
+        <p>Desarrollado por: Edilson Enrique García Villeda - Carnet: 9490-23-2637</p>
+    </footer>
+
+</body>
+</html>

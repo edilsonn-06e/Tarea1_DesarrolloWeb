@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Edi's Store - Carrito de Compras</title>
+</head>
+<body>
+
+    <header>
+        <h1>Carrito de Compras</h1>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="productos.html">Catálogo de Productos</a></li>
+                <li><a href="producto-detalle.html">Detalle de Producto</a></li>
+                <li><a href="carrito.html">Carrito de Compras</a></li>
+                <li><a href="registro.html">Registro de Usuario</a></li>
+                <li><a href="login.html">Iniciar Sesión</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <hr>
+
+    <main>
+        <section>
+            <h2>Productos en tu carrito</h2>
+
+            <form action="#" method="post">
+                <table border="1">
+                    <caption>Detalle del carrito de compras</caption>
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio Unitario</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Laptop Ultra Slim 14"</td>
+                            <td>Q 6,500.00</td>
+                            <td>
+                                <input type="number" name="cantidad_p001" min="1" value="1">
+                            </td>
+                            <td>Q 6,500.00</td>
+                            <td>
+                                <input type="checkbox" name="eliminar_p001" value="si">
+                                <label for="eliminar_p001">Quitar</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Audífonos Inalámbricos</td>
+                            <td>Q 350.00</td>
+                            <td>
+                                <input type="number" name="cantidad_p002" min="1" value="2">
+                            </td>
+                            <td>Q 700.00</td>
+                            <td>
+                                <input type="checkbox" name="eliminar_p002" value="si">
+                                <label for="eliminar_p002">Quitar</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Mochila Antirrobo</td>
+                            <td>Q 275.00</td>
+                            <td>
+                                <input type="number" name="cantidad_p004" min="1" value="1">
+                            </td>
+                            <td>Q 275.00</td>
+                            <td>
+                                <input type="checkbox" name="eliminar_p004" value="si">
+                                <label for="eliminar_p004">Quitar</label>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><strong>Total</strong></td>
+                            <td colspan="2"><strong>Q 7,475.00</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <br>
+                <input type="submit" value="Actualizar carrito">
+                <input type="reset" value="Cancelar cambios">
+            </form>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>Código de descuento</h2>
+            <form action="#" method="post">
+                <label for="cupon">Ingresa tu cupón:</label>
+                <input type="text" id="cupon" name="cupon" placeholder="Ej. DESCUENTO10">
+                <input type="submit" value="Aplicar cupón">
+            </form>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>Finalizar compra</h2>
+            <form action="#" method="post">
+                <fieldset>
+                    <legend>Datos de envío</legend>
+
+                    <label for="nombre_envio">Nombre completo:</label><br>
+                    <input type="text" id="nombre_envio" name="nombre_envio" required><br><br>
+
+                    <label for="direccion">Dirección de entrega:</label><br>
+                    <textarea id="direccion" name="direccion" rows="3" cols="40"></textarea><br><br>
+
+                    <label for="metodo_pago">Método de pago:</label><br>
+                    <input type="radio" id="tarjeta" name="metodo_pago" value="tarjeta">
+                    <label for="tarjeta">Tarjeta de crédito/débito</label><br>
+                    <input type="radio" id="contra_entrega" name="metodo_pago" value="contra_entrega">
+                    <label for="contra_entrega">Pago contra entrega</label><br><br>
+
+                    <input type="submit" value="Confirmar pedido">
+                </fieldset>
+            </form>
+        </section>
+    </main>
+
+    <hr>
+
+    <footer>
+        <p>Edi's Store &copy; 2026 - UMG</p>
+        <p>Desarrollado por: Edilson Enrique García Villeda - Carnet: 9490-23-2637</p>
+    </footer>
+
+</body>
+</html>
