@@ -1,0 +1,25 @@
+body {
+  background-color: #f5f6f8;
+}
+
+main {
+  min-height: 70vh;
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+.product-card img {
+  height: 200px;
+  object-fit: cover;
+}
+
+.hero-carousel img {
+  height: 380px;
+  object-fit: cover;
+}
+
+footer a {
+  color: inherit;
+}
