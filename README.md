@@ -1,37 +1,35 @@
-# Edi's Store - Tienda en Línea
+# Edi's Store — Tarea 2: Tienda en Línea con React y Bootstrap
 
-## Información del estudiante
+Migración de la Tienda en Línea (Tarea 1, HTML puro) a una aplicación React
+componentizada, usando React-Bootstrap para el diseño y react-router-dom para
+la navegación entre secciones.
 
 **Nombre:** Edilson Enrique García Villeda
 **Carnet:** 9490-23-2637
-**Correo electrónico:** egarciav27@miumg.edu.gt
 
----
+## Estructura de páginas
 
-## Enlace del proyecto
+- `/` — Inicio: bienvenida, Carousel de productos destacados y grid de Cards.
+- `/productos` — Catálogo de Productos: filtros de búsqueda/categoría/orden y tabla de productos.
+- `/productos/:id` — Detalle de Producto: especificaciones, reseñas (Accordion, ListGroup, Badge)
+  y formulario para agregar al carrito (Modal de confirmación).
+- `/carrito` — Carrito de Compras: estado global (React Context), cupón de descuento y checkout.
+- `/registro` — Registro de Usuario.
+- `/login` — Iniciar Sesión.
+- `/contacto` — Contacto: dirección, formulario y preguntas frecuentes (Accordion).
 
-La página se encuentra publicada en Netlify y puede visualizarse en el siguiente enlace:
+El `Navbar` y el `Footer` son componentes reutilizables presentes en todas las páginas
+(`src/components/Layout.jsx`).
 
-**https://edistoreumg.netlify.app/**
+## Cómo correr el proyecto
 
----
+```bash
+npm install
+npm run dev      # entorno de desarrollo (http://localhost:5173)
+npm run build    # build de producción
+```
 
-## Descripción del proyecto
+## Tarea 1
 
-EdiStore es un prototipo de una tienda en línea desarrollado únicamente con **HTML5 nativo**, como parte del curso de Desarrollo Web.
-
-El sitio fue construido respetando la restricción de no utilizar hojas de estilo (CSS), JavaScript ni frameworks, enfocándose únicamente en la estructura del documento HTML y en la organización del Document Object Model (DOM).
-
-Todos los formularios son únicamente de captura de información y no realizan procesamiento de datos, ya que el objetivo de esta etapa es desarrollar la estructura base del sitio web.
-
----
-
-## Tecnologías utilizadas
-
-* HTML5
-
----
-
-## Observaciones
-
-Este proyecto fue desarrollado con fines académicos para demostrar el uso correcto de etiquetas semánticas, formularios, navegación entre páginas y estructura de un sitio web utilizando exclusivamente HTML.
+Las páginas HTML originales (sin CSS/JS, restricción de la Tarea 1) se conservan en
+`legacy-tarea1/` como referencia histórica, y siguen disponibles íntegras en la rama `Tarea1`.
