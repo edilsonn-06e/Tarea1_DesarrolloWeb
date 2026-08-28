@@ -35,7 +35,7 @@ function Home() {
       <Container className="py-5">
         <Row className="mb-5">
           <Col lg={8} className="mx-auto text-center">
-            <h1>Tienda en Línea (Prototipo)</h1>
+            <h1>Tienda en Línea</h1>
             <p className="lead">
               Bienvenido(a) a Edi&apos;s Store. Somos una tienda en línea dedicada a ofrecer
               productos de tecnología, hogar y accesorios al mejor precio.
