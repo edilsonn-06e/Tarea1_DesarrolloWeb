@@ -1,4 +1,9 @@
 import laptopImg from '../assets/laptop.jpeg'
+import sillaImg from '../assets/silla.jpg'
+import audifonoImg from '../assets/Audifonos.jpg'
+import mochilaImg from '../assets/mochila.jpg'
+import monitorImg from '../assets/monitor.webp'
+
 
 export const categories = [
   { value: 'tecnologia', label: 'Tecnología' },
@@ -38,7 +43,7 @@ export const products = [
     category: 'tecnologia',
     price: 350,
     stock: 40,
-    image: null,
+    image: audifonoImg,
     shortDescription: 'Sonido envolvente con cancelación de ruido.',
     description:
       'Audífonos inalámbricos con cancelación activa de ruido, hasta 20 horas de batería y ' +
@@ -60,7 +65,7 @@ export const products = [
     category: 'hogar',
     price: 1200,
     stock: 8,
-    image: null,
+    image: sillaImg,
     shortDescription: 'Soporte lumbar ajustable, ideal para largas jornadas.',
     description:
       'Silla ergonómica con soporte lumbar ajustable, reposabrazos regulables y respaldo de ' +
@@ -82,7 +87,7 @@ export const products = [
     category: 'accesorios',
     price: 275,
     stock: 25,
-    image: null,
+    image: mochilaImg,
     shortDescription: 'Diseño antirrobo con puerto USB de carga.',
     description:
       'Mochila resistente al agua con compartimento acolchado para laptop de hasta 15.6", ' +
@@ -103,7 +108,7 @@ export const products = [
     category: 'tecnologia',
     price: 2100,
     stock: 15,
-    image: null,
+    image: monitorImg,
     shortDescription: 'Panel curvo Full HD con alta tasa de refresco.',
     description:
       'Monitor curvo de 27 pulgadas con panel Full HD, 100 Hz de tasa de refresco y tiempo ' +
