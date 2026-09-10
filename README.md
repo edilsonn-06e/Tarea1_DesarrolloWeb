@@ -9,7 +9,9 @@ Evolución de la Tienda en Línea (Tarea 2, React + React-Bootstrap) incorporand
 
 La aplicación se encuentra publicada en Netlify y puede visualizarse en el siguiente enlace:
 
-**[Edi's Store — Ver sitio web](https://tarea2edilson.netlify.app/)**
+**[Edi's Store — Ver sitio web](https://tarea3edi.netlify.app/)**
+
+Se puede iniciar sesion con el correo **admin@gmail.com** para ver un perfil de administrador, cualquier otor correo (mientras lleve el formato de correo), será tomado como un correo de cliente. 
 
 ## Arquitectura de estado global — Opción A: Context API + useReducer
 
