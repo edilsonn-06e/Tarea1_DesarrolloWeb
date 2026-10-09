@@ -1,6 +1,6 @@
 
 import { createContext, useContext, useReducer } from 'react'
-import { loginRequest } from '../api/client.js'
+import { loginRequest, setAuthToken } from '../api/client.js'
 
 const initialState = {
   isAuthenticated: false,
@@ -87,12 +87,22 @@ export function useAuth() {
   const state = useAuthState()
   const dispatch = useAuthDispatch()
 
-  // Inicio de sesión real utilizando MongoDB
+  // Inicio de sesión real utilizando MongoDB y JWT
   const login = async (correo, password) => {
     dispatch({ type: 'LOGIN_START' })
 
+    // Limpiar cualquier token anterior
+    setAuthToken(null)
+
     try {
       const data = await loginRequest(correo, password)
+
+      // Guardar el token JWT en memoria
+      if (!data.token) {
+        throw new Error('El servidor no devolvió un token de autenticación')
+      }
+
+      setAuthToken(data.token)
 
       dispatch({
         type: 'LOGIN_SUCCESS',
@@ -102,6 +112,8 @@ export function useAuth() {
       return data.user
 
     } catch (error) {
+      setAuthToken(null)
+
       const message =
         error.status === 401
           ? 'Correo o contraseña incorrectos.'
@@ -124,6 +136,9 @@ export function useAuth() {
   }
 
   const logout = () => {
+    // Eliminar el JWT al cerrar sesión
+    setAuthToken(null)
+
     dispatch({ type: 'LOGOUT' })
   }
 

@@ -9,12 +9,20 @@ import {
   updateProduct
 } from '../controllers/productController.js'
 
+import {
+  protegerRuta,
+  soloAdmin
+} from '../middleware/authMiddleware.js'
+
 const router = Router()
 
+// Rutas públicas: cualquier visitante puede consultar productos
 router.get('/', getProducts)
 router.get('/:id', getProductById)
-router.post('/', createProduct)
-router.put('/:id', updateProduct)
-router.delete('/:id', deleteProduct)
+
+// Rutas protegidas: únicamente administradores
+router.post('/', protegerRuta, soloAdmin, createProduct)
+router.put('/:id', protegerRuta, soloAdmin, updateProduct)
+router.delete('/:id', protegerRuta, soloAdmin, deleteProduct)
 
 export default router

@@ -1,16 +1,32 @@
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'
 
+// Token del usuario autenticado.
+// Se conserva únicamente en memoria.
+let authToken = null
+
+export function setAuthToken(token) {
+  authToken = token || null
+}
+
 // Función general para realizar peticiones HTTP
 async function request(path, options = {}) {
   let response
 
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers
+  }
+
+  // Enviar el token cuando esté disponible
+  if (authToken) {
+    headers.Authorization = `Bearer ${authToken}`
+  }
+
   try {
     response = await fetch(`${API_URL}${path}`, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      ...options
+      ...options,
+      headers
     })
   } catch {
     throw new Error(
@@ -36,21 +52,19 @@ async function request(path, options = {}) {
 // AUTENTICACIÓN
 // -----------------------------
 
-// Iniciar sesión
 export const loginRequest = (correo, password) =>
   request('/auth/login', {
     method: 'POST',
     body: JSON.stringify({ correo, password })
   })
 
-// Registrar usuario
 export const registerRequest = (datos) =>
   request('/auth/register', {
     method: 'POST',
     body: JSON.stringify(datos)
   })
 
-// Consultar información de un usuario
+// Requiere un token válido
 export const getUser = (id) =>
   request(`/users/${id}`)
 
@@ -58,7 +72,7 @@ export const getUser = (id) =>
 // PRODUCTOS
 // -----------------------------
 
-// Obtener productos con filtros opcionales
+// Consultas públicas
 export const getProducts = (filtros = {}) => {
   const params = new URLSearchParams(
     Object.entries(filtros).filter(
@@ -71,25 +85,22 @@ export const getProducts = (filtros = {}) => {
   return request(`/recursos${query ? `?${query}` : ''}`)
 }
 
-// Obtener un producto por ID
 export const getProduct = (id) =>
   request(`/recursos/${id}`)
 
-// Crear producto
+// Operaciones que requieren administrador
 export const createProduct = (producto) =>
   request('/recursos', {
     method: 'POST',
     body: JSON.stringify(producto)
   })
 
-// Actualizar producto
 export const updateProduct = (id, cambios) =>
   request(`/recursos/${id}`, {
     method: 'PUT',
     body: JSON.stringify(cambios)
   })
 
-// Eliminar producto
 export const deleteProduct = (id) =>
   request(`/recursos/${id}`, {
     method: 'DELETE'

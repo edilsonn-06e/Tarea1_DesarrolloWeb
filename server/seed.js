@@ -130,15 +130,34 @@ try {
 
   console.log('5 productos insertados correctamente')
 
-  // Crear o reemplazar el usuario administrador
-  await User.deleteMany({ correo: 'admin@edisstore.com' })
 
-  await User.create({
-    nombre: 'Administrador Edis Store',
-    correo: 'admin@edisstore.com',
-    password: 'admin123',
-    rol: 'admin',
+  // Crear el administrador únicamente si no existe
+  const adminEmail = process.env.ADMIN_EMAIL
+  const adminPassword = process.env.ADMIN_PASSWORD
+
+  if (!adminEmail || !adminPassword || adminPassword.length < 12) {
+    throw new Error(
+      'Configura ADMIN_EMAIL y ADMIN_PASSWORD (mínimo 12 caracteres)'
+    )
+  }
+
+  const adminExistente = await User.findOne({
+    correo: adminEmail.toLowerCase()
   })
+
+  if (!adminExistente) {
+    await User.create({
+      nombre: 'Administrador Edis Store',
+      correo: adminEmail,
+      password: adminPassword,
+      rol: 'admin',
+    })
+
+    console.log('Administrador creado correctamente')
+  } else {
+    console.log('El administrador ya existe. No se modificó su contraseña.')
+  }
+
 
   console.log('Administrador creado correctamente')
   console.log('Datos de prueba insertados')

@@ -42,7 +42,7 @@ app.use((_req, res) => {
 // Conectar MongoDB antes de iniciar el servidor
 await connectDB()
 
-// Iniciar el servidor
-app.listen(PORT, () => {
-  console.log(`API escuchando en http://localhost:${PORT}`)
+// Iniciar el servidor (compatible con Render)
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`API escuchando en el puerto ${PORT}`)
 })
