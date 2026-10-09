@@ -1,5 +1,6 @@
+
 import { useState } from 'react'
-import { Alert, Button, Col, Container, Form, Row } from 'react-bootstrap'
+import { Alert, Button, Col, Container, Form, Row, Spinner } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -7,11 +8,12 @@ function Login() {
   const [correo, setCorreo] = useState('')
   const [password, setPassword] = useState('')
   const [validated, setValidated] = useState(false)
-  const [error, setError] = useState('')
-  const { login } = useAuth()
+
+  // Estado global de autenticación
+  const { login, status, error } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     const form = event.currentTarget
     event.preventDefault()
 
@@ -20,18 +22,20 @@ function Login() {
       setValidated(true)
       return
     }
+
     setValidated(true)
 
-    // Autenticación simulada: cualquier correo/contraseña válidos inician sesión.
-    const nombre = correo
-      .split('@')[0]
-      .replace(/[._]/g, ' ')
-      .replace(/\b\w/g, (letra) => letra.toUpperCase())
-    const rol = correo.toLowerCase().includes('admin') ? 'Administrador' : 'Cliente'
+    try {
+      // Autenticación real mediante nuestra API
+      await login(correo, password)
 
-    setError('')
-    login({ nombre, correo, rol })
-    navigate('/perfil')
+      // Redirigir al perfil después del login exitoso
+      navigate('/perfil')
+
+    } catch {
+      // El error ya se guarda en AuthContext
+      // y se muestra mediante el Alert
+    }
   }
 
   return (
@@ -40,7 +44,11 @@ function Login() {
         <Col md={6} lg={5} className="mx-auto">
           <h1 className="mb-4 text-center">Iniciar Sesión</h1>
 
-          {error && <Alert variant="danger">{error}</Alert>}
+          {error && (
+            <Alert variant="danger">
+              {error}
+            </Alert>
+          )}
 
           <Form
             noValidate
@@ -60,6 +68,7 @@ function Login() {
                 Ingresa un correo electrónico válido.
               </Form.Control.Feedback>
             </Form.Group>
+
             <Form.Group className="mb-3" controlId="password_login">
               <Form.Label>Contraseña</Form.Label>
               <Form.Control
@@ -73,10 +82,34 @@ function Login() {
                 La contraseña debe tener al menos 6 caracteres.
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Check className="mb-3" type="checkbox" id="recordar" label="Recordarme" />
-            <Button type="submit" variant="primary" className="w-100 mb-3">
-              Iniciar sesión
+
+            <Form.Check
+              className="mb-3"
+              type="checkbox"
+              id="recordar"
+              label="Recordarme"
+            />
+
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-100 mb-3"
+              disabled={status === 'loading'}
+            >
+              {status === 'loading' ? (
+                <>
+                  <Spinner
+                    animation="border"
+                    size="sm"
+                    className="me-2"
+                  />
+                  Iniciando sesión...
+                </>
+              ) : (
+                'Iniciar sesión'
+              )}
             </Button>
+
             <div className="d-flex justify-content-between small">
               <a href="#!">¿Olvidaste tu contraseña?</a>
               <Link to="/registro">Crear una cuenta</Link>

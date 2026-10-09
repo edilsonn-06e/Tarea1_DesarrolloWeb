@@ -1,3 +1,4 @@
+
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { CartProvider } from './context/CartContext.jsx'
@@ -10,6 +11,7 @@ import Registro from './pages/Registro.jsx'
 import Login from './pages/Login.jsx'
 import Perfil from './pages/Perfil.jsx'
 import Contacto from './pages/Contacto.jsx'
+import AdminProductos from './pages/AdminProductos.jsx'
 
 function App() {
   return (
@@ -26,6 +28,12 @@ function App() {
               <Route path="login" element={<Login />} />
               <Route path="perfil" element={<Perfil />} />
               <Route path="contacto" element={<Contacto />} />
+
+              {/* Administración de productos */}
+              <Route
+                path="admin/productos"
+                element={<AdminProductos />}
+              />
             </Route>
           </Routes>
         </BrowserRouter>

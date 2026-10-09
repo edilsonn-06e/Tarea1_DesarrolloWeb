@@ -1,4 +1,6 @@
+
 import { createContext, useContext, useReducer } from 'react'
+import { loginRequest } from '../api/client.js'
 
 const initialState = {
   isAuthenticated: false,
@@ -10,7 +12,12 @@ const initialState = {
 function authReducer(state, action) {
   switch (action.type) {
     case 'LOGIN_START':
-      return { ...state, status: 'loading', error: null }
+      return {
+        ...state,
+        status: 'loading',
+        error: null,
+      }
+
     case 'LOGIN_SUCCESS':
       return {
         ...state,
@@ -19,6 +26,7 @@ function authReducer(state, action) {
         status: 'succeeded',
         error: null,
       }
+
     case 'LOGIN_ERROR':
       return {
         ...state,
@@ -27,8 +35,10 @@ function authReducer(state, action) {
         status: 'failed',
         error: action.payload,
       }
+
     case 'LOGOUT':
       return { ...initialState }
+
     default:
       return state
   }
@@ -42,24 +52,34 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthStateContext.Provider value={state}>
-      <AuthDispatchContext.Provider value={dispatch}>{children}</AuthDispatchContext.Provider>
+      <AuthDispatchContext.Provider value={dispatch}>
+        {children}
+      </AuthDispatchContext.Provider>
     </AuthStateContext.Provider>
   )
 }
 
 export function useAuthState() {
   const context = useContext(AuthStateContext)
+
   if (!context) {
-    throw new Error('useAuthState debe usarse dentro de un AuthProvider')
+    throw new Error(
+      'useAuthState debe usarse dentro de un AuthProvider'
+    )
   }
+
   return context
 }
 
 export function useAuthDispatch() {
   const context = useContext(AuthDispatchContext)
+
   if (!context) {
-    throw new Error('useAuthDispatch debe usarse dentro de un AuthProvider')
+    throw new Error(
+      'useAuthDispatch debe usarse dentro de un AuthProvider'
+    )
   }
+
   return context
 }
 
@@ -67,20 +87,40 @@ export function useAuth() {
   const state = useAuthState()
   const dispatch = useAuthDispatch()
 
-  const login = ({ nombre, correo, rol = 'Cliente' }) => {
+  // Inicio de sesión real utilizando MongoDB
+  const login = async (correo, password) => {
     dispatch({ type: 'LOGIN_START' })
-    const user = {
-      nombre,
-      correo,
-      rol,
-      fechaAcceso: new Date().toISOString(),
+
+    try {
+      const data = await loginRequest(correo, password)
+
+      dispatch({
+        type: 'LOGIN_SUCCESS',
+        payload: data.user,
+      })
+
+      return data.user
+
+    } catch (error) {
+      const message =
+        error.status === 401
+          ? 'Correo o contraseña incorrectos.'
+          : error.message
+
+      dispatch({
+        type: 'LOGIN_ERROR',
+        payload: message,
+      })
+
+      throw error
     }
-    dispatch({ type: 'LOGIN_SUCCESS', payload: user })
-    return user
   }
 
   const loginError = (message) => {
-    dispatch({ type: 'LOGIN_ERROR', payload: message })
+    dispatch({
+      type: 'LOGIN_ERROR',
+      payload: message,
+    })
   }
 
   const logout = () => {
