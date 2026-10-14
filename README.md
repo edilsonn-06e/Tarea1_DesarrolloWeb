@@ -465,7 +465,7 @@ https://edis-store-tarea4.netlify.app/
 Configuración:
 
 ```text
-Branch: Tarea4
+Branch: Tarea5
 Build command: npm run build
 Publish directory: dist
 ```
@@ -478,6 +478,8 @@ VITE_API_URL=https://tarea1-desarrolloweb.onrender.com/api
 
 Se utiliza `public/_redirects` para permitir el acceso directo a las rutas de React Router.
 
+**Nota:** el sitio conserva la dirección creada en la Tarea 4; a partir de la Tarea 5 se publica desde la rama `Tarea5`.
+
 ### Backend — Render
 
 Servicio:
@@ -487,7 +489,7 @@ https://tarea1-desarrolloweb.onrender.com/
 Configuración:
 
 ```text
-Branch: Tarea4
+Branch: Tarea5
 Root directory: server
 Build command: npm ci
 Start command: npm start
@@ -541,6 +543,8 @@ Tokens con payload de identidad y expiración estricta de 5 minutos, respuestas 
 ## Conclusión
 
 La Tarea 4 permitió evolucionar Edi's Store hacia una aplicación web full stack, integrando React, Express y MongoDB Atlas.
+
+La Tarea 5 reforzó la seguridad de la API mediante tokens JWT con expiración estricta de 5 minutos, un middleware reutilizable que responde 401 ante tokens ausentes, inválidos o expirados, y un manejo global en el frontend que cierra la sesión, notifica al usuario y lo redirige a `/login`.
 
 El sistema cuenta con persistencia de información, autenticación, autorización y administración de productos mediante una API REST.
 
