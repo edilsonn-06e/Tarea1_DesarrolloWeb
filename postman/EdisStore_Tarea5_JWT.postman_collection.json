@@ -1,0 +1,204 @@
+{
+  "info": {
+    "name": "Edi's Store - Tarea 5 (JWT con expiración de 5 minutos)",
+    "description": "Pruebas de autorización mediante JWT.\n\nOrden de ejecución:\n1. Login: obtiene el token y lo guarda en la variable {{token}}.\n2. Endpoint protegido con token válido: responde 200.\n3. Endpoint protegido sin token: responde 401 (token_missing).\n4. Endpoint protegido con token expirado: ejecutar DESPUÉS de esperar 5 minutos desde el login; responde 401 (token_expired).\n\nAntes de ejecutar, editar las variables de la colección `correo` y `password` con un usuario existente. Para probar contra producción, cambiar `baseUrl` a https://tarea1-desarrolloweb.onrender.com/api",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api" },
+    { "key": "correo", "value": "admin@edisstore.com" },
+    { "key": "password", "value": "CAMBIAR_POR_TU_PASSWORD" },
+    { "key": "token", "value": "" },
+    { "key": "userId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Login (obtener token)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+              "",
+              "const data = pm.response.json();",
+              "",
+              "pm.test('Devuelve un token JWT', () => {",
+              "  pm.expect(data.token).to.be.a('string');",
+              "  pm.expect(data.token.split('.')).to.have.lengthOf(3);",
+              "});",
+              "",
+              "// Guardar token e id para las siguientes peticiones",
+              "pm.collectionVariables.set('token', data.token);",
+              "pm.collectionVariables.set('userId', data.user.id);",
+              "",
+              "// Verificar payload y expiración de 5 minutos (300 s)",
+              "const payload = JSON.parse(atob(data.token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));",
+              "console.log('Payload del token:', payload);",
+              "",
+              "pm.test('El payload incluye id, email y role', () => {",
+              "  pm.expect(payload).to.include.keys('id', 'email', 'role');",
+              "});",
+              "",
+              "pm.test('El token expira en exactamente 5 minutos', () => {",
+              "  pm.expect(payload.exp - payload.iat).to.eql(300);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"correo\": \"{{correo}}\",\n  \"password\": \"{{password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "login"]
+        },
+        "description": "Valida las credenciales y devuelve un JWT firmado con { id, email, role } y expiresIn: '5m'."
+      },
+      "response": [
+        {
+          "name": "200 OK - Login exitoso",
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"message\": \"Inicio de sesión exitoso\",\n  \"user\": {\n    \"nombre\": \"Administrador\",\n    \"correo\": \"admin@edisstore.com\",\n    \"rol\": \"admin\",\n    \"id\": \"66f1c0c2a1b2c3d4e5f60789\"\n  },\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "2. Endpoint protegido con token válido (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde 200 con el token válido', () => pm.response.to.have.status(200));",
+              "pm.test('Devuelve el perfil sin contraseña', () => {",
+              "  const data = pm.response.json();",
+              "  pm.expect(data.id).to.eql(pm.collectionVariables.get('userId'));",
+              "  pm.expect(data).to.not.have.property('password');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/{{userId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["users", "{{userId}}"]
+        },
+        "description": "Ejecutar dentro de los 5 minutos posteriores al login. Envía Authorization: Bearer {{token}}."
+      },
+      "response": [
+        {
+          "name": "200 OK - Perfil del usuario",
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"nombre\": \"Administrador\",\n  \"correo\": \"admin@edisstore.com\",\n  \"rol\": \"admin\",\n  \"pais\": \"Guatemala\",\n  \"id\": \"66f1c0c2a1b2c3d4e5f60789\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "3. Endpoint protegido sin token (401)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde 401 sin token', () => pm.response.to.have.status(401));",
+              "pm.test('error = token_missing', () => {",
+              "  pm.expect(pm.response.json().error).to.eql('token_missing');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": { "type": "noauth" },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/{{userId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["users", "{{userId}}"]
+        },
+        "description": "Petición sin cabecera Authorization."
+      },
+      "response": [
+        {
+          "name": "401 Unauthorized - Sin token",
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"error\": \"token_missing\",\n  \"message\": \"Debes iniciar sesión para continuar\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "4. Endpoint protegido con token expirado tras 5 min (401)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Responde 401 con el token expirado', () => pm.response.to.have.status(401));",
+              "pm.test('Devuelve el payload de token_expired', () => {",
+              "  pm.expect(pm.response.json()).to.eql({",
+              "    error: 'token_expired',",
+              "    message: 'La sesión ha expirado o ya no es válida. Por favor, inicie sesión nuevamente.'",
+              "  });",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/{{userId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["users", "{{userId}}"]
+        },
+        "description": "IMPORTANTE: ejecutar esta petición después de esperar más de 5 minutos desde el paso 1 (sin volver a hacer login). Usa el mismo {{token}}, que ya superó su vigencia."
+      },
+      "response": [
+        {
+          "name": "401 Unauthorized - Token expirado",
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"error\": \"token_expired\",\n  \"message\": \"La sesión ha expirado o ya no es válida. Por favor, inicie sesión nuevamente.\"\n}"
+        }
+      ]
+    }
+  ]
+}

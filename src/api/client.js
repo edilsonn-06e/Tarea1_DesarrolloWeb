@@ -1,12 +1,68 @@
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'
 
-// Token del usuario autenticado.
-// Se conserva únicamente en memoria.
-let authToken = null
+// Claves usadas para persistir la sesión en localStorage
+const TOKEN_KEY = 'edis_token'
+const USER_KEY = 'edis_user'
 
-export function setAuthToken(token) {
-  authToken = token || null
+// -----------------------------
+// PERSISTENCIA DE LA SESIÓN
+// -----------------------------
+
+export function getStoredToken() {
+  try {
+    return localStorage.getItem(TOKEN_KEY)
+  } catch {
+    return null
+  }
+}
+
+export function getStoredUser() {
+  try {
+    return JSON.parse(localStorage.getItem(USER_KEY))
+  } catch {
+    return null
+  }
+}
+
+export function saveSession(token, user) {
+  localStorage.setItem(TOKEN_KEY, token)
+  localStorage.setItem(USER_KEY, JSON.stringify(user))
+}
+
+export function clearSession() {
+  localStorage.removeItem(TOKEN_KEY)
+  localStorage.removeItem(USER_KEY)
+}
+
+// Fecha de expiración (ms) leída del payload del JWT.
+// No verifica la firma: eso lo hace el servidor.
+export function getTokenExpiration(token) {
+  try {
+    const payload = JSON.parse(
+      atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))
+    )
+    return payload.exp ? payload.exp * 1000 : null
+  } catch {
+    return null
+  }
+}
+
+export function isTokenExpired(token) {
+  const exp = getTokenExpiration(token)
+  return !exp || exp <= Date.now()
+}
+
+// -----------------------------
+// INTERCEPTOR DE SESIÓN EXPIRADA
+// -----------------------------
+
+// Función que se ejecuta cuando la API responde 401
+// a una petición autenticada (la registra SessionWatcher)
+let onUnauthorized = null
+
+export function setUnauthorizedHandler(handler) {
+  onUnauthorized = handler
 }
 
 // Función general para realizar peticiones HTTP
@@ -18,9 +74,11 @@ async function request(path, options = {}) {
     ...options.headers
   }
 
-  // Enviar el token cuando esté disponible
-  if (authToken) {
-    headers.Authorization = `Bearer ${authToken}`
+  // Adjuntar automáticamente el token cuando exista
+  const token = getStoredToken()
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
   }
 
   try {
@@ -37,11 +95,19 @@ async function request(path, options = {}) {
   const data = await response.json().catch(() => ({}))
 
   if (!response.ok) {
+    // 401 a una petición que llevaba token:
+    // la sesión expiró o el token ya no es válido
+    if (response.status === 401 && token) {
+      clearSession()
+      onUnauthorized?.(data)
+    }
+
     const error = new Error(
       data.message || `Error ${response.status}`
     )
 
     error.status = response.status
+    error.code = data.error
     throw error
   }
 

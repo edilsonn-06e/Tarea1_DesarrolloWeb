@@ -1,12 +1,37 @@
 
 import { createContext, useContext, useReducer } from 'react'
-import { loginRequest, setAuthToken } from '../api/client.js'
+import {
+  clearSession,
+  getStoredToken,
+  getStoredUser,
+  isTokenExpired,
+  loginRequest,
+  saveSession,
+} from '../api/client.js'
+
+export const SESSION_EXPIRED_MESSAGE =
+  'Su sesión ya no es válida o ha caducado. Por favor, inicie sesión nuevamente.'
 
 const initialState = {
   isAuthenticated: false,
   user: null,
+  token: null,
   status: 'idle', // idle | loading | succeeded | failed
   error: null,
+  sessionMessage: null,
+}
+
+// Restaurar la sesión guardada en localStorage (si sigue vigente)
+function loadInitialState() {
+  const token = getStoredToken()
+  const user = getStoredUser()
+
+  if (token && user && !isTokenExpired(token)) {
+    return { ...initialState, isAuthenticated: true, user, token }
+  }
+
+  clearSession()
+  return initialState
 }
 
 function authReducer(state, action) {
@@ -16,13 +41,15 @@ function authReducer(state, action) {
         ...state,
         status: 'loading',
         error: null,
+        sessionMessage: null,
       }
 
     case 'LOGIN_SUCCESS':
       return {
         ...state,
         isAuthenticated: true,
-        user: action.payload,
+        user: action.payload.user,
+        token: action.payload.token,
         status: 'succeeded',
         error: null,
       }
@@ -32,12 +59,20 @@ function authReducer(state, action) {
         ...state,
         isAuthenticated: false,
         user: null,
+        token: null,
         status: 'failed',
         error: action.payload,
       }
 
+    // payload opcional: mensaje a mostrar (p. ej. sesión expirada)
     case 'LOGOUT':
-      return { ...initialState }
+      return {
+        ...initialState,
+        sessionMessage: action.payload?.message ?? null,
+      }
+
+    case 'CLEAR_SESSION_MESSAGE':
+      return { ...state, sessionMessage: null }
 
     default:
       return state
@@ -48,7 +83,7 @@ const AuthStateContext = createContext(null)
 const AuthDispatchContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [state, dispatch] = useReducer(authReducer, initialState)
+  const [state, dispatch] = useReducer(authReducer, undefined, loadInitialState)
 
   return (
     <AuthStateContext.Provider value={state}>
@@ -91,28 +126,28 @@ export function useAuth() {
   const login = async (correo, password) => {
     dispatch({ type: 'LOGIN_START' })
 
-    // Limpiar cualquier token anterior
-    setAuthToken(null)
+    // Limpiar cualquier sesión anterior
+    clearSession()
 
     try {
       const data = await loginRequest(correo, password)
 
-      // Guardar el token JWT en memoria
       if (!data.token) {
         throw new Error('El servidor no devolvió un token de autenticación')
       }
 
-      setAuthToken(data.token)
+      // Persistir el token JWT y el usuario en localStorage
+      saveSession(data.token, data.user)
 
       dispatch({
         type: 'LOGIN_SUCCESS',
-        payload: data.user,
+        payload: { user: data.user, token: data.token },
       })
 
       return data.user
 
     } catch (error) {
-      setAuthToken(null)
+      clearSession()
 
       const message =
         error.status === 401
@@ -137,10 +172,20 @@ export function useAuth() {
 
   const logout = () => {
     // Eliminar el JWT al cerrar sesión
-    setAuthToken(null)
+    clearSession()
 
     dispatch({ type: 'LOGOUT' })
   }
 
-  return { ...state, login, loginError, logout }
+  const clearSessionMessage = () => {
+    dispatch({ type: 'CLEAR_SESSION_MESSAGE' })
+  }
+
+  return {
+    ...state,
+    login,
+    loginError,
+    logout,
+    clearSessionMessage,
+  }
 }

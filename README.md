@@ -1,4 +1,4 @@
-# Edi's Store — Tarea 4: React, Express y MongoDB Atlas
+# Edi's Store — Tarea 5: Autorización con JWT y expiración de sesión
 
 **Curso:** Desarrollo Web  
 **Estudiante:** Edilson Enrique García Villeda  
@@ -8,7 +8,7 @@
 
 Edi's Store es una aplicación web de tienda en línea desarrollada con React y React-Bootstrap, que integra un backend en Node.js con Express y una base de datos MongoDB Atlas.
 
-Este proyecto representa la evolución de las Tareas 1, 2 y 3, incorporando persistencia de datos, servicios REST, autenticación mediante JWT y operaciones CRUD para la administración de productos.
+Este proyecto representa la evolución de las Tareas 1 a 4, incorporando persistencia de datos, servicios REST, autenticación mediante JWT con expiración de 5 minutos, manejo global de sesión expirada y operaciones CRUD para la administración de productos.
 
 ## Sitio publicado
 
@@ -109,6 +109,7 @@ Tarea1_DesarrolloWeb/
 │   ├── api/
 │   │   └── client.js
 │   ├── components/
+│   │   └── SessionWatcher.jsx
 │   ├── context/
 │   │   ├── AuthContext.jsx
 │   │   └── CartContext.jsx
@@ -125,6 +126,8 @@ Tarea1_DesarrolloWeb/
 │   │   ├── Perfil.jsx
 │   │   └── Contacto.jsx
 │   └── App.jsx
+├── postman/
+│   └── EdisStore_Tarea5_JWT.postman_collection.json
 ├── .env.example
 ├── .gitignore
 ├── package.json
@@ -138,7 +141,7 @@ Tarea1_DesarrolloWeb/
 ```bash
 git clone https://github.com/edilsonn-06e/Tarea1_DesarrolloWeb.git
 cd Tarea1_DesarrolloWeb
-git switch Tarea4
+git switch Tarea5
 ```
 
 ### 2. Instalar dependencias del frontend
@@ -299,7 +302,7 @@ Los nuevos usuarios reciben el rol `cliente` de manera predeterminada.
 
 El backend verifica las credenciales almacenadas en MongoDB y devuelve los datos del usuario junto con un token JWT.
 
-El token tiene una vigencia de dos horas.
+El token tiene una vigencia de **5 minutos** (ver [Tarea 5](#tarea-5--autorización-con-jwt-y-expiración-de-sesión)).
 
 ### Estado global
 
@@ -310,9 +313,9 @@ React utiliza Context API y `useReducer` para administrar:
 - `LOGIN_ERROR`
 - `LOGOUT`
 
-El token se conserva en memoria y se envía mediante el encabezado `Authorization: Bearer TOKEN` cuando se realizan peticiones HTTP autenticadas.
+El token se guarda en `localStorage` y se envía automáticamente mediante el encabezado `Authorization: Bearer TOKEN` en todas las peticiones a la API.
 
-Al cerrar sesión, se elimina el token de memoria. La sesión no persiste al recargar la aplicación.
+Al cerrar sesión o al expirar el token, se eliminan el token y los datos del usuario del navegador.
 
 ### Seguridad
 
@@ -325,6 +328,74 @@ La consulta de perfiles requiere autenticación y se encuentra restringida al pr
 Las contraseñas se almacenan como hashes y no se exponen en las respuestas de usuario.
 
 Este proyecto tiene fines académicos y no incluye funcionalidades propias de una tienda comercial completa, como procesamiento real de pagos o recuperación de contraseñas.
+
+## Tarea 5 — Autorización con JWT y expiración de sesión
+
+### Backend: generación del token y expiración
+
+En `server/controllers/authController.js`, el endpoint `POST /api/auth/login` valida las credenciales y firma un JWT con la clave secreta del servidor (`JWT_SECRET`):
+
+```js
+const token = jwt.sign(
+  { id: user.id, email: user.correo, role: user.rol },
+  process.env.JWT_SECRET,
+  { expiresIn: '5m', algorithm: 'HS256' }
+)
+```
+
+La opción `expiresIn: '5m'` hace que la librería `jsonwebtoken` agregue al payload el campo `exp` = `iat + 300` segundos. El servidor no guarda sesiones: la fecha de vencimiento viaja firmada dentro del propio token y no puede alterarse sin invalidar la firma.
+
+### Backend: middleware de autenticación
+
+`server/middleware/authMiddleware.js` exporta el middleware reutilizable `protegerRuta`, que:
+
+1. Lee la cabecera `Authorization: Bearer <token>`.
+2. Si falta la cabecera o el token, responde **401** con `{ "error": "token_missing", ... }`.
+3. Verifica la firma y la vigencia con `jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] })`.
+4. Si `jwt.verify` lanza `TokenExpiredError` (pasaron más de 5 minutos), responde **401** con:
+
+```json
+{
+  "error": "token_expired",
+  "message": "La sesión ha expirado o ya no es válida. Por favor, inicie sesión nuevamente."
+}
+```
+
+5. Si la firma no es válida, responde **401** con `{ "error": "token_invalid", ... }`.
+
+El middleware se aplica a las rutas privadas: `POST`, `PUT` y `DELETE` de `/api/recursos` (junto con `soloAdmin`) y `GET /api/users/:id`.
+
+### Frontend: almacenamiento e inyección del token
+
+- `src/api/client.js` centraliza todas las peticiones en una función envoltorio de `fetch`. Antes de cada petición lee el token de `localStorage` y agrega `Authorization: Bearer <token>`.
+- `src/context/AuthContext.jsx` (Context API + `useReducer`) guarda el token y el usuario en `localStorage` al iniciar sesión y mantiene el estado global `isAuthenticated`. Al recargar la página restaura la sesión solo si el token aún no ha vencido.
+
+### Frontend: interceptor de sesión expirada y redirección
+
+1. **Interceptor de respuestas:** cuando una petición que llevaba token recibe **401**, `client.js` elimina el token y el usuario de `localStorage` y ejecuta un manejador global registrado con `setUnauthorizedHandler`.
+2. **`src/components/SessionWatcher.jsx`** se monta dentro de `BrowserRouter` y registra ese manejador. Al ejecutarse:
+   - despacha la acción `LOGOUT` con el mensaje de sesión caducada,
+   - redirige a `/login` con `useNavigate`.
+3. Además, `SessionWatcher` programa un temporizador con el `exp` del token, de modo que la sesión se cierra automáticamente a los 5 minutos aunque el usuario no realice ninguna petición.
+4. **`src/pages/Login.jsx`** muestra un `Alert` de React-Bootstrap: *"Su sesión ya no es válida o ha caducado. Por favor, inicie sesión nuevamente."*
+
+```text
+Petición → API responde 401 → client.js limpia localStorage
+        → SessionWatcher: dispatch(LOGOUT) → navigate('/login') → Alert en Login
+```
+
+### Pruebas con Postman / Thunder Client
+
+La colección `postman/EdisStore_Tarea5_JWT.postman_collection.json` puede importarse en Postman (**Import**) o en Thunder Client (**Collections → Import**). Contiene:
+
+| # | Petición | Resultado esperado |
+|---|---|---|
+| 1 | `POST /api/auth/login` | 200, guarda el token en `{{token}}` y verifica que dure 300 s |
+| 2 | `GET /api/users/{{userId}}` con Bearer Token válido | 200 |
+| 3 | `GET /api/users/{{userId}}` sin token | 401 `token_missing` |
+| 4 | `GET /api/users/{{userId}}` con el mismo token **después de 5 minutos** | 401 `token_expired` |
+
+Antes de ejecutarla, editar las variables `correo` y `password` de la colección.
 
 ## Páginas de la aplicación
 
@@ -462,6 +533,10 @@ Implementación de Node.js, Express, MongoDB Atlas y Mongoose.
 Sustitución de los productos estáticos por consultas a la base de datos, incorporación de autenticación real mediante JWT y protección de rutas administrativas.
 
 Despliegue independiente del frontend en Netlify y del backend en Render.
+
+### Tarea 5 — Autorización con JWT
+
+Tokens con payload de identidad y expiración estricta de 5 minutos, respuestas 401 descriptivas, persistencia de la sesión en el cliente e interceptor global que cierra la sesión y redirige a `/login` cuando el token expira.
 
 ## Conclusión
 

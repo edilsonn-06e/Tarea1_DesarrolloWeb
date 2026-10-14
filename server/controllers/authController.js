@@ -85,12 +85,17 @@ export async function login(req, res) {
       })
     }
 
-    // Generar token JWT válido durante 2 horas
+    // Generar token JWT con la identidad del usuario,
+    // válido durante exactamente 5 minutos
     const token = jwt.sign(
-      { id: user.id },
+      {
+        id: user.id,
+        email: user.correo,
+        role: user.rol
+      },
       process.env.JWT_SECRET,
       {
-        expiresIn: '2h',
+        expiresIn: '5m',
         algorithm: 'HS256'
       }
     )

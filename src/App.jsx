@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { CartProvider } from './context/CartContext.jsx'
 import Layout from './components/Layout.jsx'
+import SessionWatcher from './components/SessionWatcher.jsx'
 import Home from './pages/Home.jsx'
 import Productos from './pages/Productos.jsx'
 import ProductoDetalle from './pages/ProductoDetalle.jsx'
@@ -18,6 +19,9 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <BrowserRouter>
+          {/* Manejo global de sesión expirada */}
+          <SessionWatcher />
+
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />

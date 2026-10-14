@@ -10,7 +10,13 @@ function Login() {
   const [validated, setValidated] = useState(false)
 
   // Estado global de autenticación
-  const { login, status, error } = useAuth()
+  const {
+    login,
+    status,
+    error,
+    sessionMessage,
+    clearSessionMessage
+  } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (event) => {
@@ -43,6 +49,18 @@ function Login() {
       <Row>
         <Col md={6} lg={5} className="mx-auto">
           <h1 className="mb-4 text-center">Iniciar Sesión</h1>
+
+          {/* Aviso de sesión expirada (token de 5 minutos vencido) */}
+          {sessionMessage && (
+            <Alert
+              variant="warning"
+              dismissible
+              onClose={clearSessionMessage}
+            >
+              <Alert.Heading as="h6">Sesión finalizada</Alert.Heading>
+              {sessionMessage}
+            </Alert>
+          )}
 
           {error && (
             <Alert variant="danger">
