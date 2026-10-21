@@ -1,0 +1,7 @@
+NAMES                        IMAGE                  STATUS                        PORTS
+edis-bluegreen-web-green-1   edis-store-web:1.1.0   Up 13 seconds (healthy)       80/tcp
+edis-bluegreen-api-green-1   edis-store-api:1.1.0   Up 19 seconds (healthy)       4000/tcp
+edis-bluegreen-gateway-1     nginx:1.28-alpine      Up 57 seconds                 0.0.0.0:8081->80/tcp, [::]:8081->80/tcp, 0.0.0.0:8082->8080/tcp, [::]:8082->8080/tcp
+edis-bluegreen-web-blue-1    edis-store-web:1.0.0   Up About a minute (healthy)   80/tcp
+edis-bluegreen-api-blue-1    edis-store-api:1.0.0   Up About a minute (healthy)   4000/tcp
+edis-bluegreen-mongo-1       mongo:7.0              Up About a minute (healthy)   27017/tcp
