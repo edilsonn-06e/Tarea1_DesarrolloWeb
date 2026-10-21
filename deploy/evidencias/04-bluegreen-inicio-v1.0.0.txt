@@ -1,0 +1,16 @@
+ Volume edis-bluegreen_mongo-data Creating 
+ Volume edis-bluegreen_mongo-data Creating 
+ Network edis-bluegreen_default Creating 
+ Network edis-bluegreen_default Creating 
+ Volume edis-bluegreen_mongo-data Created 
+ Volume edis-bluegreen_mongo-data Created 
+ Network edis-bluegreen_default Created 
+ Network edis-bluegreen_default Created 
+Entorno activo: blue (1.0.0)   inactivo: green (1.0.0)
+  http://localhost:8081/api/version     -> {"version":"1.0.0","slot":"blue","host":"5188dc2eaa50"}
+  http://localhost:8082/api/version -> {"version":"1.0.0","slot":"green","host":"1a2694f20b1b"}
+Conectado a MongoDB Atlas
+5 productos insertados correctamente
+Administrador creado correctamente
+Administrador creado correctamente
+Datos de prueba insertados

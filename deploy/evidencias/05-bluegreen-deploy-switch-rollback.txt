@@ -1,0 +1,51 @@
+### 1. deploy 1.1.0 (entorno inactivo)
+[18:30:56] Entorno activo: blue. Publicando 1.1.0 en green (sin tráfico de usuarios)
+[18:31:11] Versión 1.1.0 lista en green. Verifique en http://localhost:8082 y ejecute: scripts/bluegreen.sh switch
+Entorno activo: blue (1.0.0)   inactivo: green (1.1.0)
+  http://localhost:8081/api/version     -> {"version":"1.0.0","slot":"blue","host":"5188dc2eaa50"}
+  http://localhost:8082/api/version -> {"version":"1.1.0","slot":"green","host":"3ecbab09d404"}
+### 2. verificación del entorno inactivo antes del cambio (puerto 8082)
+Verificando http://localhost:8082
+  Frontend: {"component":"web","version":"1.1.0","slot":"green","host":"398d26d9707c"}
+  API:      {"version":"1.1.0","slot":"green","host":"3ecbab09d404"}
+  [OK]    GET /                      página React (200)
+  [OK]    GET /productos             ruta de React Router (200)
+  [OK]    GET /api/health            salud de la API (200)
+  [OK]    GET /api/recursos          catálogo (productos) (5)
+  [OK]    POST /api/auth/login       emite JWT (si)
+  [OK]    GET /api/users/:id         con token (200)
+  [OK]    GET /api/users/:id         sin token (401)
+Resultado: 7 correctas, 0 fallidas
+### 3. switch
+[18:31:14] Cambiando el tráfico: blue -> green
+2026/10/21 00:31:16 [notice] 39#39: signal process started
+[18:31:16] Tráfico en green. El entorno blue sigue encendido para un rollback inmediato
+Entorno activo: green (1.1.0)   inactivo: blue (1.0.0)
+  http://localhost:8081/api/version     -> {"version":"1.1.0","slot":"green","host":"3ecbab09d404"}
+  http://localhost:8082/api/version -> {"version":"1.0.0","slot":"blue","host":"5188dc2eaa50"}
+### 4. rollback
+[18:31:26] Cambiando el tráfico: green -> blue
+2026/10/21 00:31:29 [notice] 63#63: signal process started
+[18:31:29] Tráfico en blue. El entorno green sigue encendido para un rollback inmediato
+Entorno activo: blue (1.0.0)   inactivo: green (1.1.0)
+  http://localhost:8081/api/version     -> {"version":"1.0.0","slot":"blue","host":"5188dc2eaa50"}
+  http://localhost:8082/api/version -> {"version":"1.1.0","slot":"green","host":"3ecbab09d404"}
+### 5. switch de nuevo a 1.1.0
+[18:31:39] Cambiando el tráfico: blue -> green
+2026/10/21 00:31:41 [notice] 87#87: signal process started
+[18:31:42] Tráfico en green. El entorno blue sigue encendido para un rollback inmediato
+Entorno activo: green (1.1.0)   inactivo: blue (1.0.0)
+  http://localhost:8081/api/version     -> {"version":"1.1.0","slot":"green","host":"3ecbab09d404"}
+  http://localhost:8082/api/version -> {"version":"1.0.0","slot":"blue","host":"5188dc2eaa50"}
+### 6. verificación final en producción (8081)
+Verificando http://localhost:8081
+  Frontend: {"component":"web","version":"1.1.0","slot":"green","host":"398d26d9707c"}
+  API:      {"version":"1.1.0","slot":"green","host":"3ecbab09d404"}
+  [OK]    GET /                      página React (200)
+  [OK]    GET /productos             ruta de React Router (200)
+  [OK]    GET /api/health            salud de la API (200)
+  [OK]    GET /api/recursos          catálogo (productos) (5)
+  [OK]    POST /api/auth/login       emite JWT (si)
+  [OK]    GET /api/users/:id         con token (200)
+  [OK]    GET /api/users/:id         sin token (401)
+Resultado: 7 correctas, 0 fallidas

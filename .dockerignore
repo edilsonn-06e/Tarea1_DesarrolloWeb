@@ -1,0 +1,15 @@
+node_modules
+dist
+server
+legacy-tarea1
+postman
+.git
+.vscode
+.env
+.env.*
+*.log
+Dockerfile
+.dockerignore
+# Del directorio de despliegue solo se necesita la plantilla de Nginx del frontend
+deploy
+!deploy/nginx/web.conf.template

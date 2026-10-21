@@ -1,0 +1,5 @@
+IMAGE                  ID             DISK USAGE   CONTENT SIZE   EXTRA
+edis-store-api:1.0.0   772b1b2fe971        262MB           64MB        
+edis-store-api:1.1.0   fb1de38d89b9        262MB           64MB        
+edis-store-web:1.0.0   42a8bea4b27e       94.9MB         26.9MB        
+edis-store-web:1.1.0   369eca2eb335       94.9MB         26.9MB        

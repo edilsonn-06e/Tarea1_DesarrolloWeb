@@ -1,0 +1,11 @@
+Verificando http://localhost:8080
+  Frontend: {"component":"web","version":"1.0.0","slot":"recreate","host":"28a69a8b636c"}
+  API:      {"version":"1.0.0","slot":"recreate","host":"01a55cba15f1"}
+  [OK]    GET /                      página React (200)
+  [OK]    GET /productos             ruta de React Router (200)
+  [OK]    GET /api/health            salud de la API (200)
+  [OK]    GET /api/recursos          catálogo (productos) (5)
+  [OK]    POST /api/auth/login       emite JWT (si)
+  [OK]    GET /api/users/:id         con token (200)
+  [OK]    GET /api/users/:id         sin token (401)
+Resultado: 7 correctas, 0 fallidas

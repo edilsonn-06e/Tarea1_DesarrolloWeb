@@ -21,6 +21,12 @@ function Footer() {
               Tienda en línea desarrollada con React y React-Bootstrap para el curso de
               Desarrollo Web - Tarea 2.
             </p>
+            {/* Versión inyectada al construir la imagen Docker (Tarea 6) */}
+            {import.meta.env.VITE_APP_VERSION && (
+              <span className="badge bg-info text-dark mt-2" data-testid="app-version">
+                Versión {import.meta.env.VITE_APP_VERSION}
+              </span>
+            )}
           </Col>
           <Col md={6}>
             <h6>Integrante y módulos aportados</h6>

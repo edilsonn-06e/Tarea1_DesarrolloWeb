@@ -1,0 +1,44 @@
+# Configuración del contenedor web (edis-store-web).
+# Las variables ${APP_VERSION}, ${DEPLOY_SLOT} y ${API_UPSTREAM} se sustituyen al iniciar.
+server {
+    listen 80;
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # DNS interno de Docker: resuelve el contenedor de la API en cada petición,
+    # así un contenedor recreado (nueva IP) se encuentra sin reiniciar Nginx
+    resolver 127.0.0.11 valid=5s ipv6=off;
+
+    add_header X-App-Version "${APP_VERSION}" always;
+    add_header X-Deploy-Slot "${DEPLOY_SLOT}" always;
+
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    # Identificación de la versión del frontend que atendió la petición
+    location = /version {
+        default_type application/json;
+        return 200 '{"component":"web","version":"${APP_VERSION}","slot":"${DEPLOY_SLOT}","host":"$hostname"}\n';
+    }
+
+    # La API se publica en la misma URL que el frontend
+    location /api/ {
+        set $api_backend http://${API_UPSTREAM};
+        proxy_pass $api_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        # Las cabeceras X-App-Version / X-Deploy-Slot de la API pasan sin cambios
+        add_header X-Web-Version "${APP_VERSION}" always;
+    }
+
+    # React Router: cualquier ruta del cliente devuelve index.html
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

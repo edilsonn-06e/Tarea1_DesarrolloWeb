@@ -1,0 +1,70 @@
+### 1. Iniciar canary 1.1.0 con el 10 % de los usuarios
+[18:33:38] Iniciando canary 1.1.0 (todavía sin tráfico)
+{"version":"1.1.0","slot":"canary","host":"2ae3b6338fc1"}
+2026/10/21 00:33:54 [notice] 39#39: signal process started
+[18:33:54] Usuarios en canary: 10 %
+Estable: 1.0.0 | Canary: 1.1.0 | Porcentaje canary: 10 %
+--- state/canary/split.conf
+split_clients "${client_key}" $split_pool {
+    10% canary;
+    * stable;
+}
+### 2. Distribución con 10 %: 200 usuarios nuevos
+  186 respuestas   93.0%  versión 1.0.0 (stable)
+   14 respuestas    7.0%  versión 1.1.0 (canary)
+### 3. Persistencia: un mismo usuario (cookie edis_client) hace 10 peticiones
+     10 {"version":"1.0.0","slot":"stable",}
+### 4. Forzar grupo con cabecera X-Canary
+{"version":"1.1.0","slot":"canary","host":"2ae3b6338fc1"}
+{"version":"1.0.0","slot":"stable","host":"dc7ebabb93f3"}
+### 5. Verificación funcional de la versión canary
+GET /api/recursos (canary) -> HTTP 200
+### 6. Aumentar a 50 %
+2026/10/21 00:34:28 [notice] 63#63: signal process started
+[18:34:29] Usuarios en canary: 50 %
+   85 respuestas   42.5%  versión 1.0.0 (stable)
+  115 respuestas   57.5%  versión 1.1.0 (canary)
+### 7. Abortar (simulación de un fallo detectado)
+[18:34:59] Cancelando canary: todo el tráfico vuelve a la versión estable
+2026/10/21 00:35:02 [notice] 87#87: signal process started
+[18:35:02] Usuarios en canary: 0 %
+Going to remove edis-canary-web-canary-1, edis-canary-api-canary-1
+Estable: 1.0.0 | Canary: 1.0.0 | Porcentaje canary: 0 %
+  100 respuestas  100.0%  versión 1.0.0 (stable)
+### 8. Reintentar: canary 1.1.0 al 25 %
+[18:35:21] Iniciando canary 1.1.0 (todavía sin tráfico)
+{"version":"1.1.0","slot":"canary","host":"3f603bbde2c3"}
+2026/10/21 00:35:36 [notice] 111#111: signal process started
+[18:35:36] Usuarios en canary: 25 %
+Estable: 1.0.0 | Canary: 1.1.0 | Porcentaje canary: 25 %
+  143 respuestas   71.5%  versión 1.0.0 (stable)
+   57 respuestas   28.5%  versión 1.1.0 (canary)
+### 9. Promover 1.1.0 a estable
+[18:36:04] Promoviendo 1.1.0: 100 % a canary mientras se actualiza la versión estable
+2026/10/21 00:36:07 [notice] 135#135: signal process started
+[18:36:07] Usuarios en canary: 100 %
+2026/10/21 00:36:25 [notice] 159#159: signal process started
+[18:36:25] Usuarios en canary: 0 %
+Going to remove edis-canary-web-canary-1, edis-canary-api-canary-1
+[18:36:27] Versión estable: 1.1.0. Contenedores canary eliminados
+Estable: 1.1.0 | Canary: 1.1.0 | Porcentaje canary: 0 %
+  100 respuestas  100.0%  versión 1.1.0 (stable)
+### 10. Verificación final
+Verificando http://localhost:8083
+  Frontend: {"component":"web","version":"1.1.0","slot":"stable","host":"ee20db94638a"}
+  API:      {"version":"1.1.0","slot":"stable","host":"d0f03aad8890"}
+  [OK]    GET /                      página React (200)
+  [OK]    GET /productos             ruta de React Router (200)
+  [OK]    GET /api/health            salud de la API (200)
+  [OK]    GET /api/recursos          catálogo (productos) (5)
+  [OK]    POST /api/auth/login       emite JWT (si)
+  [OK]    GET /api/users/:id         con token (200)
+  [OK]    GET /api/users/:id         sin token (401)
+Resultado: 7 correctas, 0 fallidas
+### 11. Contenedores
+NAME                       IMAGE                  COMMAND                  SERVICE      CREATED          STATUS                    PORTS
+edis-canary-api-stable-1   edis-store-api:1.1.0   "docker-entrypoint.s…"   api-stable   39 seconds ago   Up 36 seconds (healthy)   4000/tcp
+edis-canary-gateway-1      nginx:1.28-alpine      "/docker-entrypoint.…"   gateway      4 minutes ago    Up 3 minutes              0.0.0.0:8083->80/tcp, [::]:8083->80/tcp
+edis-canary-mongo-1        mongo:7.0              "docker-entrypoint.s…"   mongo        4 minutes ago    Up 4 minutes (healthy)    27017/tcp
+edis-canary-web-stable-1   edis-store-web:1.1.0   "/docker-entrypoint.…"   web-stable   38 seconds ago   Up 30 seconds (healthy)   80/tcp
+Estable: 1.1.0 | Canary: 1.1.0 | Porcentaje canary: 0 %

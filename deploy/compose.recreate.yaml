@@ -1,0 +1,50 @@
+# Estrategia 1: Recreate (reemplazo directo)
+# Un solo juego de contenedores (web + api). Para publicar una versión nueva se
+# detienen los contenedores actuales y se crean otros con la nueva etiqueta.
+#
+#   APP_VERSION=1.0.0 docker compose -f compose.recreate.yaml up -d --wait
+#   APP_VERSION=1.1.0 docker compose -f compose.recreate.yaml up -d --wait   (actualizar)
+#
+# URL: http://localhost:8080
+name: edis-recreate
+
+services:
+  mongo:
+    image: mongo:7.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:?Definir MONGO_ROOT_USER en deploy/.env}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?Definir MONGO_ROOT_PASSWORD en deploy/.env}
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    image: edis-store-api:${APP_VERSION:-1.0.0}
+    environment:
+      DEPLOY_SLOT: recreate
+      MONGODB_URI: ${MONGODB_URI:-mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongo:27017/edis_store?authSource=admin}
+      JWT_SECRET: ${JWT_SECRET:?Definir JWT_SECRET en deploy/.env}
+      CLIENT_URL: http://localhost:8080
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  web:
+    image: edis-store-web:${APP_VERSION:-1.0.0}
+    environment:
+      DEPLOY_SLOT: recreate
+      API_UPSTREAM: api:4000
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  mongo-data:

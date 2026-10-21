@@ -1,0 +1,7 @@
+[18:32:38] Usuarios en canary: 0 %
+Estable: 1.0.0 | Canary: 1.0.0 | Porcentaje canary: 0 %
+Conectado a MongoDB Atlas
+5 productos insertados correctamente
+Administrador creado correctamente
+Administrador creado correctamente
+Datos de prueba insertados

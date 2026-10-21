@@ -1,0 +1,34 @@
+[18:29:38] Actualizando 1.0.0 -> 1.1.0 (estrategia Recreate)
+[18:29:41] 1) Deteniendo y eliminando los contenedores de la versión 1.0.0
+ Container edis-recreate-web-1 Stopping 
+ Container edis-recreate-web-1 Stopped 
+ Container edis-recreate-api-1 Stopping 
+ Container edis-recreate-api-1 Stopped 
+Going to remove edis-recreate-web-1, edis-recreate-api-1
+ Container edis-recreate-api-1 Removing 
+ Container edis-recreate-web-1 Removing 
+ Container edis-recreate-api-1 Removed 
+ Container edis-recreate-web-1 Removed 
+[18:29:44] 2) Iniciando los contenedores de la versión 1.1.0
+ Container edis-recreate-mongo-1 Running 
+ Container edis-recreate-api-1 Creating 
+ Container edis-recreate-api-1 Created 
+ Container edis-recreate-web-1 Creating 
+ Container edis-recreate-web-1 Created 
+ Container edis-recreate-mongo-1 Healthy 
+ Container edis-recreate-api-1 Starting 
+ Container edis-recreate-api-1 Started 
+ Container edis-recreate-api-1 Healthy 
+ Container edis-recreate-web-1 Starting 
+ Container edis-recreate-web-1 Started 
+ Container edis-recreate-mongo-1 Healthy 
+ Container edis-recreate-api-1 Healthy 
+ Container edis-recreate-web-1 Healthy 
+[18:30:00] 3) Versión 1.1.0 en servicio; esperando al monitor
+      5 peticiones  HTTP 200  versión 1.0.0
+      7 peticiones  HTTP 000  versión -
+     17 peticiones  HTTP 200  versión 1.1.0
+Peticiones: 29 | correctas: 22 | fallidas: 7
+  versión 1.1.0: 17 respuestas
+  versión 1.0.0: 5 respuestas
+Ventana de indisponibilidad: 11154 ms (primer fallo a último fallo)

@@ -1,0 +1,85 @@
+# Estrategia 3: Canary
+# La versión estable atiende a la mayoría de los usuarios; la versión canary
+# recibe un porcentaje configurable. El gateway asigna a cada cliente una cookie
+# (edis_client) y decide con split_clients a qué grupo pertenece, de modo que un
+# mismo usuario siempre ve la misma versión.
+# El porcentaje se cambia con scripts/canary.sh (reescribe split.conf y recarga Nginx).
+#
+# URL: http://localhost:8083
+name: edis-canary
+
+x-api: &api
+  environment: &api-env
+    MONGODB_URI: ${MONGODB_URI:-mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongo:27017/edis_store?authSource=admin}
+    JWT_SECRET: ${JWT_SECRET:?Definir JWT_SECRET en deploy/.env}
+    CLIENT_URL: http://localhost:8083
+    ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+    ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+  depends_on:
+    mongo:
+      condition: service_healthy
+
+services:
+  mongo:
+    image: mongo:7.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:?Definir MONGO_ROOT_USER en deploy/.env}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?Definir MONGO_ROOT_PASSWORD en deploy/.env}
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ---------- Versión estable ----------
+  api-stable:
+    <<: *api
+    image: edis-store-api:${STABLE_VERSION:-1.0.0}
+    environment:
+      <<: *api-env
+      DEPLOY_SLOT: stable
+
+  web-stable:
+    image: edis-store-web:${STABLE_VERSION:-1.0.0}
+    environment:
+      DEPLOY_SLOT: stable
+      API_UPSTREAM: api-stable:4000
+    depends_on:
+      api-stable:
+        condition: service_healthy
+
+  # ---------- Versión canary (solo se inicia con el perfil "canary") ----------
+  api-canary:
+    <<: *api
+    profiles: ["canary"]
+    image: edis-store-api:${CANARY_VERSION:-1.0.0}
+    environment:
+      <<: *api-env
+      DEPLOY_SLOT: canary
+
+  web-canary:
+    profiles: ["canary"]
+    image: edis-store-web:${CANARY_VERSION:-1.0.0}
+    environment:
+      DEPLOY_SLOT: canary
+      API_UPSTREAM: api-canary:4000
+    depends_on:
+      api-canary:
+        condition: service_healthy
+
+  # ---------- Enrutador de tráfico ----------
+  gateway:
+    image: nginx:1.28-alpine
+    ports:
+      - "8083:80"
+    volumes:
+      - ./nginx/canary.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./state/canary:/etc/nginx/state:ro
+    depends_on:
+      web-stable:
+        condition: service_healthy
+
+volumes:
+  mongo-data:
